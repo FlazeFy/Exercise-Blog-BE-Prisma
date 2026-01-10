@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express"
 import { prisma } from "../config/prisma"
 import { hashPassword, verifyPassword } from "../helpers/hashing"
 
-export const postRegister = async (req: Request, res: Response, next: NextFunction) => {
+export const postRegister = async (req: Request, res: Response) => {
     try {
         // Body
         const { name, email, password } = req.body
@@ -55,11 +55,14 @@ export const postRegister = async (req: Request, res: Response, next: NextFuncti
             data: result,
         })
     } catch (error) {
-        next(error)
+        res.status(500).json({
+            message: "Something went wrong",
+            data: error,
+        })
     }
 }
 
-export const getLogin = async (req: Request, res: Response, next: NextFunction) => {
+export const getLogin = async (req: Request, res: Response) => {
     try {
         // Body
         const { email, password } = req.body
@@ -99,6 +102,9 @@ export const getLogin = async (req: Request, res: Response, next: NextFunction) 
             },
         })
     } catch (error) {
-        next(error)
+        res.status(500).json({
+            message: "Something went wrong",
+            data: error,
+        })
     }
 }
