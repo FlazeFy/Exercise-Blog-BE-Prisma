@@ -49,7 +49,7 @@ export const postRegister = async (req: Request, res: Response) => {
             },
         })
 
-        // Response
+        // Success response
         res.status(201).json({
             message: "Register successful",
             data: result,
@@ -92,7 +92,7 @@ export const getLogin = async (req: Request, res: Response) => {
         // Dummy token
         const token = "ABCD12345"
 
-        // Response
+        // Success response
         const { password: _, salt: __, ...safeAccount } = account
         res.status(200).json({
             message: "Login successful",
