@@ -12,3 +12,26 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model Author {
+  id         String   @id @default(uuid()) @db.Uuid
+  name       String   @db.VarChar(75)
+  email      String   @unique @db.VarChar(144)
+  password   String   @db.VarChar(500)
+  salt       String   @db.VarChar(255)
+  created_at DateTime @default(now()) 
+
+  articles  Article[]
+}
+
+model Article {
+  id         String    @id @default(uuid()) @db.Uuid
+  title      String    @unique @db.VarChar(255)
+  content    String    @db.Text
+  category   String    @db.VarChar(36)
+  author_id  String    @db.Uuid
+  created_at DateTime  @default(now()) 
+  updated_at DateTime? 
+
+  author    Author     @relation(fields: [author_id], references: [id], onDelete: Cascade)
+}
