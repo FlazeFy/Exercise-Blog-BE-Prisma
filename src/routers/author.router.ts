@@ -7,6 +7,6 @@ const router = Router()
 router.post("/register", postRegister)
 router.patch("/update", verifyToken, putUpdateAccount)
 router.post("/login", postLogin)
-router.post("/refresh", postRefreshToken)
+router.get("/refresh", postRefreshToken)
 
 export default router

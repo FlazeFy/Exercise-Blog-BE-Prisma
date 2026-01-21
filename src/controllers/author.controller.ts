@@ -137,10 +137,19 @@ export const postRefreshToken = async (req: Request, res: Response) => {
         // Create new access token
         const newAccessToken = createToken({ id: decoded.id }, "7d")
 
+        // Query
+        const id = decoded.id
+        const account = await prisma.author.findUnique({
+            where: { id },
+        })
+
         // Success response
         return res.status(200).json({
             message: "Token refreshed successfully",
-            data: { token: newAccessToken },
+            data: { 
+                user: account,
+                token: newAccessToken 
+            },
         })
     } catch (error: any) {
         return res.status(500).json({
