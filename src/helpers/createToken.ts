@@ -1,5 +1,12 @@
-import { sign } from "jsonwebtoken"
+import jwt, { SignOptions } from "jsonwebtoken"
 
-export const createToken = (data: { id: string | number }) => {
-    return sign(data, process.env.SECRET || "secret", { expiresIn: "24h" })
+const SECRET: string = process.env.SECRET || "secret"
+
+interface TokenPayload {
+    id: string | number
+}
+
+export const createToken = (data: TokenPayload, expiresIn: SignOptions["expiresIn"] = "24h"): string => {
+    const options: SignOptions = { expiresIn }
+    return jwt.sign(data, SECRET, options)
 }

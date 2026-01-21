@@ -1,11 +1,12 @@
 import { Router } from "express"
-import { postRegister, getLogin, putUpdateAccount } from "../controllers/author.controller"
+import { postRegister, postLogin, putUpdateAccount, postRefreshToken } from "../controllers/author.controller"
 import { verifyToken } from "../middleware/verifyToken"
 
 const router = Router()
 
 router.post("/register", postRegister)
 router.patch("/update", verifyToken, putUpdateAccount)
-router.get("/login", getLogin)
+router.post("/login", postLogin)
+router.post("/refresh", postRefreshToken)
 
 export default router

@@ -1,5 +1,6 @@
 import { randomUUID } from "crypto"
-import { Request, Response, NextFunction } from "express"
+import { Request, Response } from "express"
+import jwt from "jsonwebtoken";
 import { prisma } from "../config/prisma"
 import { createToken } from "../helpers/createToken"
 import { hashPassword, verifyPassword } from "../helpers/hashing"
@@ -11,7 +12,7 @@ export const postRegister = async (req: Request, res: Response) => {
 
         // Validation: name required
         if (!name || name.trim() === "") {
-            return res.status(400).json({
+            res.status(400).json({
                 message: "Name cannot be empty",
                 data: null,
             })
@@ -24,7 +25,7 @@ export const postRegister = async (req: Request, res: Response) => {
         })
 
         if (checkEmail) {
-            return res.status(400).json({
+            res.status(400).json({
                 message: "Email already registered",
                 data: null,
             })
@@ -63,7 +64,7 @@ export const postRegister = async (req: Request, res: Response) => {
     }
 }
 
-export const getLogin = async (req: Request, res: Response) => {
+export const postLogin = async (req: Request, res: Response) => {
     try {
         // Body
         const { email, password } = req.body
@@ -104,6 +105,45 @@ export const getLogin = async (req: Request, res: Response) => {
         })
     } catch (error) {
         res.status(500).json({
+            message: "Something went wrong",
+            data: error,
+        })
+    }
+}
+
+
+export const postRefreshToken = async (req: Request, res: Response) => {
+    try {
+        // Auth header
+        const authHeader = req.headers.authorization
+        const refreshToken = authHeader?.split(" ")[1]
+
+        if (!refreshToken) {
+            return res.status(400).json({
+                message: "Refresh token required",
+                data: null,
+            })
+        }
+
+        // Verify refresh token
+        const decoded = jwt.verify(refreshToken, process.env.SECRET || "secret")
+        if (typeof decoded === "string" || !("id" in decoded)) {
+            return res.status(401).json({
+                message: "Invalid refresh token",
+                data: null,
+            })
+        }
+
+        // Create new access token
+        const newAccessToken = createToken({ id: decoded.id }, "7d")
+
+        // Success response
+        return res.status(200).json({
+            message: "Token refreshed successfully",
+            data: { token: newAccessToken },
+        })
+    } catch (error: any) {
+        return res.status(500).json({
             message: "Something went wrong",
             data: error,
         })
